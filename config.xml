@@ -2,10 +2,10 @@
 <widget xmlns     = "http://www.w3.org/ns/widgets"
         xmlns:gap = "http://phonegap.com/ns/1.0"
         xmlns:android = "http://schemas.android.com/apk/res/android"
-        id        = "com.moodle.moodlemobile"
+        id        = "fr.upmf-grenoble.moodlemobile"
         versionCode = "387"
         version   = "1.13">
-    <name>Moodle Mobile</name>
+    <name>Moodle Mobile (UPMF Version)</name>
 
     <description>
         Moodle Mobile official app

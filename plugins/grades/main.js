@@ -67,7 +67,106 @@ define(templates,function (activities, activitiesTotal, gradesTable) {
 
             // Option 1.
             if (MM.plugins.grades.wsName.indexOf("gradereport_user_get_grades_table") > -1) {
-                MM.plugins.grades.loadGradesTable(courseId, MM.config.current_site.userid);
+				
+				
+			    var params = {
+				coursecapabilities:
+					[{
+						courseid:courseId,
+						capabilities:['moodle/grade:viewall']
+					}],
+					
+				options:
+					[{
+						name: "userfields",
+						value: "id"
+					}]
+				};
+
+             
+				if(MM.util.wsAvailable('core_enrol_get_enrolled_users_with_capability')){
+					//check permissions to see all the grades.
+						
+					MM.moodleWSCall('core_enrol_get_enrolled_users_with_capability', params, function(dat){
+					
+						var canSeeAllGrades = false;
+						for (var i=0 ; i<dat[0].users.length ; i++) {								
+							if(MM.config.current_site.userid == dat[0].users[i].id)
+								canSeeAllGrades = true;
+								
+						}
+												
+						if(canSeeAllGrades){
+							//allowed access
+							
+							MM.plugins.participants.showParticipants(courseId);
+							
+							//link participants to grades
+							
+							setTimeout(
+								function () {
+									$(".users-index-list .nav .nav-item a").each(function(){
+										var ref = this.href.split("index.html")[1];
+										ref = ref.replace("participant","course/grades/user");
+										ref+= "/1";
+										$(this).attr("href", ref);		
+
+									});
+
+							
+									$(".users-index-list .nav .nav-item a").on(MM.clickType,function(e){
+										setTimeout(
+											function () {
+											$(".back-row a").removeAttr("onClick");
+											
+										});
+									
+									});
+									
+									//if device is tablet, load first user's grades
+									if (MM.deviceType == "tablet" && $(".users-index-list .nav .nav-item").length > 0)
+										MM.plugins.grades.loadGradesTable(courseId, MM.config.current_site.userid,1);
+										
+									
+									$(".back-row a").removeAttr("onClick");
+									
+									//end of loading
+									$(menuEl, '#panel-left').removeClass('loading-row');
+									
+									},
+									500
+
+							);
+
+									
+
+								
+
+						}
+						
+						else						
+							//no permissions
+							
+							MM.plugins.grades.loadGradesTable(courseId, MM.config.current_site.userid);			
+							
+							
+					},{},
+					
+					// Error callback, when no permissions
+					function(e) {
+						
+						MM.plugins.grades.loadGradesTable(courseId, MM.config.current_site.userid);
+					}
+				
+				);
+				
+				}else 
+					//if WS not available
+					
+					MM.plugins.grades.loadGradesTable(courseId, MM.config.current_site.userid);
+
+			
+               
             } else {
                 // Option 2 and 3.
 

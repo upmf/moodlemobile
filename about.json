@@ -1,5 +1,5 @@
 {
-"name": "Moodle Mobile",
+"name": "Moodle Mobile (UPMF Version)",
 "license": {
     "name": "Apache 2.0",
     "link": "http://www.apache.org/licenses/LICENSE-2.0"
@@ -64,6 +64,16 @@
     "fullname": "Daniel Ramírez",
     "contribution": "Contributor (developer Window version)",
     "company": "CV&A Consulting"
+},
+{
+    "fullname": "Fabrice Ménard",
+    "contribution": "Contributor (developer UPMF version)",
+    "company": "TICE EAD UPMF"
+},
+{
+    "fullname": "Robin Gauthier",
+    "contribution": "Contributor (developer UPMF version)",
+    "company": "TICE EAD UPMF"
 }
 ],
 "thirdpartylibs": [

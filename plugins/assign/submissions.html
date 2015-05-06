@@ -7,7 +7,7 @@
             <img src="img/mod/assign.png" alt="img">
         </div>
         <div class="bd">
-            <h2><%= MM.util.formatText(assign.name) %></h2>
+            <h2><%= MM.util.formatText(assign.name)%></h2>
         </div>
     </div>
 </div>
@@ -91,6 +91,18 @@
         </div>
 
         <% if (canviewsubmissions) { %>
+		
+		
+			<center>
+				<div id="all-files">
+				
+					<a id="download_all_files" href="#"> Tout télécharger </a>
+					<p> test numero 5</p>
+				</div>
+			</center>
+			
+			
+		
         <h3><%= MM.lang.s('submissions') %></h3>
         <% _.each(submissions, function(submission) { %>
             <% user = {'fullname': 'User with Id' + submission.userid, 'profileimageurl': ''}; %>
@@ -125,6 +137,14 @@
                             <% } %>
                             <div class="attachment media">
                                 <div class="content-actions app-icon">
+								
+								<% if (file.localpath) { %>
+								
+									<img id="feedimg-<%= file.id %>" src="http://www.evangile.ca/outils/ClipArts/Bureau/original/crayon.png" class="edit-feedback" data-filepath="<%=file.localpath%>">
+						
+								 <% } %>
+								
+								
                                     <img id="downimg-<%= file.id %>" src="img/<%= dImg %>.png" class="assign-download" data-downloadurl="<%= file.fileurl %>" data-filename="<%= file.filepath %>" data-attachmentid="<%= file.id %>">
                                 </div>
                                 <div class="content-name">

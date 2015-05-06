@@ -168,7 +168,7 @@ define(templates, function (assignTpl, submissionsTpl) {
                         // In this case, we would need additional information (like pre-fetching the course participants).
                         MM.plugins.participants._loadParticipants(assign.course, 0, 0,
                             function(users) {
-
+								
                                 // Recover the users who has made submissions, we need to retrieve the full information later.
                                 var userIds = [];
                                 data.submissions.forEach(function(sub) {
@@ -207,6 +207,7 @@ define(templates, function (assignTpl, submissionsTpl) {
             );
         },
 
+
         _renderSubmissionsPage: function(data, pageTitle) {
 
             MM.plugins.assign.submissionsCache = data.submissions;
@@ -214,6 +215,40 @@ define(templates, function (assignTpl, submissionsTpl) {
             var html = MM.tpl.render(MM.plugins.assign.templates.submissions.html, data);
             MM.panels.show("right", html, {title: pageTitle});
 
+
+			//-----------------------\\
+			// /!\ ADD BY STUDENT /!\ 
+			
+			//if less than 2 submissions files, hide all download button
+			if($(".assign-download").length<2){
+				$("#download_all_files").hide();
+			}
+			
+			//TO DOWNLOAD EVERYTHING
+            $("#download_all_files").on(MM.clickType, function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+				$(".bd > .assign-download").each(function(){
+				    var url = $(this).data("downloadurl");
+					var filename = $(this).data("filename");
+					var attachmentId = $(this).data("attachmentid");
+					MM.plugins.assign._downloadFile(url, filename, attachmentId,false);
+				})
+
+            });
+			
+			
+			$(".edit-feedback").on(MM.clickType, function(e) {
+				var pathAssign = $(this).data("filepath");
+				var pathFeedback = pathAssign.replace('assign-files', 'feedback-files');
+				MM._openFile(pathFeedback);
+				
+            });
+			//__________________________\\
+			
+			
+			
             // Handle intro files downloads.
             $(".assign-download", "#panel-right").on(MM.clickType, function(e) {
                 e.preventDefault();
@@ -223,7 +258,7 @@ define(templates, function (assignTpl, submissionsTpl) {
                 var filename = $(this).data("filename");
                 var attachmentId = $(this).data("attachmentid");
 
-                MM.plugins.assign._downloadFile(url, filename, attachmentId);
+                MM.plugins.assign._downloadFile(url, filename, attachmentId,true);
             });
 
             // View submission texts.
@@ -293,7 +328,7 @@ define(templates, function (assignTpl, submissionsTpl) {
             return files;
         },
 
-        _downloadFile: function(url, filename, attachmentId) {
+        _downloadFile: function(url, filename, attachmentId, one_file) {
             // Add the token.
             var downloadURL = MM.fixPluginfile(url);
             var siteId = MM.config.current_site.id;
@@ -302,9 +337,13 @@ define(templates, function (assignTpl, submissionsTpl) {
 
             filename = MM.fs.normalizeFileName(filename);
 
+			
+			
             var directory = siteId + "/assign-files/" + attachmentId;
             var filePath = directory + "/" + filename;
 
+			
+			
             MM.fs.init(function() {
                 if (MM.deviceConnected()) {
                     MM.log("Starting download of Moodle file: " + downloadURL);
@@ -313,6 +352,8 @@ define(templates, function (assignTpl, submissionsTpl) {
                         MM.log("Downloading Moodle file to " + filePath + " from URL: " + downloadURL);
 
                         $(downCssId).attr("src", "img/loadingblack.gif");
+						
+						//Pour télécharger dans dossier assign files (conserver l'original)
                         MM.moodleDownloadFile(downloadURL, filePath,
                             function(fullpath) {
                                 MM.log("Download of content finished " + fullpath + " URL: " + downloadURL);
@@ -326,16 +367,46 @@ define(templates, function (assignTpl, submissionsTpl) {
                                 };
                                 MM.db.insert("assign_files", file);
 
+                            },
+                            function(fullpath) {
                                 $(downCssId).remove();
-                                $(linkCssId).attr("href", fullpath);
-                                $(linkCssId).attr("rel", "external");
+                                MM.log("Error downloading " + fullpath + " URL: " + downloadURL);
+                            }
+                        );
+						
+						
+                    });
+					
+					
+					
+					
+					var directory2 = siteId + "/feedback-files/" + attachmentId;
+					var filePath2 = directory2 + "/" + filename;
+					 MM.log("Starting download of Moodle file in Feedback directory2: " + downloadURL);
+                    // All the functions are asynchronous, like createDir.
+                    MM.fs.createDir(directory2, function() {
+                        MM.log("Downloading Moodle file to " + filePath2 + " from URL: " + downloadURL);
+
+                     
+						
+						//Pour télécharger dans dossier feedback 
+                        MM.moodleDownloadFile(downloadURL, filePath2,
+                            function(fullpath) {
+                                MM.log("Download of content finished " + fullpath + " URL: " + downloadURL);
+
+
+                                $(downCssId).remove();
+
                                 // Remove class and events.
                                 $(linkCssId).removeClass("assign-download");
                                 $(linkCssId).off(MM.clickType);
 
                                 // Android, open in new browser
-                                MM.handleFiles(linkCssId);
-                                MM._openFile(fullpath);
+								if(one_file){
+								
+									MM.handleFiles(linkCssId);
+									MM._openFile(fullpath);
+								}
 
                             },
                             function(fullpath) {
@@ -343,7 +414,14 @@ define(templates, function (assignTpl, submissionsTpl) {
                                 MM.log("Error downloading " + fullpath + " URL: " + downloadURL);
                             }
                         );
+						
+						
                     });
+					
+					
+					
+					
+					
                 } else {
                     MM.popErrorMessage(MM.lang.s("errornoconnectednocache"));
                 }
