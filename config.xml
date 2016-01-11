@@ -8,7 +8,7 @@
     <name>UPMF Moodle Mobile</name>
 
     <description>
-        fr.upmf-grenob Moodle Mobile app
+        UPMF Moodle Mobile app
     </description>
 
     <author href="http://moodle.com" email="juan@moodle.com">
@@ -20,7 +20,7 @@
     </gap:config-file>
     <preference name="android-minSdkVersion" value="5" />
 
-    <preference name="phonegap-version" value="3.6.3" />
+    <preference name="phonegap-version" value="5.2.0" />
     <preference name="orientation"      value="default" />
     <preference name="target-device"    value="universal" />
     <preference name="fullscreen"       value="false" />
