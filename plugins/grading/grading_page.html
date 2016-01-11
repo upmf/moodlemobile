@@ -1,0 +1,147 @@
+<% if(device == "phone") { %>
+	<div class="header-sub">
+
+		<div class="back-row">
+			
+				<a onclick="window.history.back();"><img src="img/arrowleft.png"></a>
+			
+		</div>
+		<div id="back-arrow-title" class="media">
+			<div class="img app-ico">
+				<img src="img/mod/assign.png" alt="img">
+			</div>
+			<div class="bd">
+				<h2><%= MM.util.formatText(assign.name)%></h2>
+			</div>
+		</div>
+	</div>
+<% } %>	
+<div class="content-index">
+        <% if (canviewsubmissions) { %>
+		<div id="grading_status">
+		<center><p> <%=MM.lang.s('gradingstatus')%> : </p>
+			<% if (status == "in_progress") { %>
+				<a id="undefined" class="btn status"><%=MM.lang.s('undefined')%></a>
+				<a id="in_progress" class="btn status active"><%=MM.lang.s('inprogress')%></a>
+				<a id="ended" class="btn status"><%=MM.lang.s('ended')%></a>
+			<%} else if (status == "ended"){ %>
+				<a id="undefined" class="btn status"><%=MM.lang.s('undefined')%></a>
+				<a id="in_progress" class="btn status"><%=MM.lang.s('inprogress')%></a>
+				<a id="ended" class="btn status active"><%=MM.lang.s('ended')%></a>
+			<%} else { %>
+				<a id="undefined" class="btn status active"><%=MM.lang.s('undefined')%></a>
+				<a id="in_progress" class="btn status"><%=MM.lang.s('inprogress')%></a>
+				<a id="ended" class="btn status"><%=MM.lang.s('ended')%></a>
+		<% } } %>
+		</center>
+		</div>
+		
+    <div class="path-mod-assign">
+
+
+        <% if (canviewsubmissions) { %>
+			
+			
+			<h3><%= MM.lang.s('submissions') %></h3>
+
+			</center>
+			<% var status = false %>
+			<% _.each(submissions, function(submission) { %>
+				
+				<% if(submission.userid == user.userid) { %>
+					<% status = true %>
+					<div class="post" data-assignsubmission="<%= submission.submission %>">
+						<div class="header">
+							<img class="user-picture" src="<%= MM.util.getMoodleFilePath(user.profileimageurl) %>">
+							<a class="author-name" href="#" rel="author"><%= user.fullname %></a>
+							<time><%= MM.util.timestampToUserDate(submission.timemodified) %></time>
+							<span class="status">
+								<%= MM.lang.s(submission.status) %>
+							</span>
+						</div>
+						<div class="content">
+				  
+
+							<% var text = MM.plugins.assign._getSubmissionText(submission); %>
+							<% var files = MM.plugins.assign._getSubmissionFiles(submission); %>
+							
+							<% if(files.length > 0 && files[0].localpath){
+
+								var filePathUrl = encodeURI(files[0].filepath);
+								var folderFilesPath = (files[0].localpath).replace(filePathUrl,"");
+
+							} %>
+							
+
+							<% if (text != '') { %>
+								<p><a href="#" class="submissiontext" data-submissionid="<%= submission.id %>"><%= MM.lang.s('viewsubmission') %></a></p>
+							<% } %>
+
+							<% if (files.length > 0) { %>
+
+								<div class="attachments">
+							
+									<% _.each(files, function(file) { %>
+										<% if (file.localpath) { %>
+											<% var dImg = "reloadgrey"; %>
+										<% } else { %>
+											<% var dImg = "download"; %>
+										<% } %>
+										<div class="attachment media">
+											<div class="content-actions app-icon">			
+												<img id="downimg-<%= file.id %>" src="img/<%= dImg %>.png" class="assign-download" data-downloadurl="<%= file.fileurl %>" data-filename="<%= file.filepath %>" data-attachmentid="<%= file.id %>">
+											</div>
+											<div class="content-name">
+												<div class="img app-ico">
+													<img src="img/files/<%= file.icon %>" alt="img">
+												</div>
+												<div class="bd">
+													<% if (!file.localpath) { %>
+														<a id="file-<%= file.id %>" class="assign-download" href="#" data-downloadurl="<%= file.fileurl %>" data-filename="<%= file.filepath %>" data-attachmentid="<%= file.id %>">
+															<%= file.filepath %>
+														</a>
+													<% } else { %>
+														<a id="file-<%= file.id %>" href="<%= file.localpath %>" rel="external">
+															<%= file.filepath %>
+														</a>
+													<% } %>
+												</div>
+											</div>
+										</div>
+
+									<% }); %>
+									
+
+								</div>
+									<% if(folderFilesPath){ %>
+									<a href="<%= folderFilesPath %>" rel="external">
+										<img src="img/folder.png"/>
+									</a>
+									<% } %>
+							<% } else if  (text == ''){ %>
+								<span><%= MM.lang.s('nosubmissions') %></span>
+							<% } %>
+						
+
+						</div>
+					</div>
+				
+				<% } %>
+				
+			<% }); %>
+			<% if (status == false) {%>
+				<div><center> <%= MM.lang.s('usernevercome') %></center></div>
+			<% } %>
+			
+			<center><h3><%=MM.lang.s('grading')%></h3></center>
+			<div id="grading"  style="padding: 10px;">
+				<%= gradingForm %>
+			</div>
+				
+		<% } else { %>
+			<div class="centered">
+				<a href="<%= activityLink %>" target="_blank"><button><%= MM.lang.s('addsubmission') %></button></a>
+			</div>
+        <% } %>
+    </div>
+</div>

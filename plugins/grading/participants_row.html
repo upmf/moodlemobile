@@ -1,18 +1,18 @@
-<% if (typeof linkToGrades === "undefined") { %>
-	<%	linkToGrades = 0 %>
-<% } %>
 <% if (typeof moduleId === "undefined") { %>
 	<%	moduleId = -1 %>
+<% } %>
+<% if (moduleId != -1){ %>
+	<li class="nav-item">
+		<a href="#grading/module/admin/<%= courseId %>/<%= moduleId %>" class="media touch-row" > Administration </a>
+	</li>
 <% } %>
 <% _.each(users, function(user) { %>
 	<li class="nav-item" id="user-<%=user.id%>">
 	
-	<% if (linkToGrades){ %>
-    <a href="#participant/<%= courseId %>/<%= user.id %>" class="media touch-row">
-	<% } else if (moduleId != -1){ %>
+	<% if (moduleId != -1){ %>
 	
 		<a href="#grading/module/user/<%= courseId %>/<%= moduleId %>/<%= user.id %>" class="media touch-row" >
-
+		
 	<% } else { %>	
 		<a href="#participant/<%= courseId %>/<%= user.id %>" class="media touch-row">
 	<% } %>
@@ -23,5 +23,13 @@
           <p><%= user.fullname %></p>
         </div>
     </a>
+	<% if (user.status == "ended"){ %>
+		<button class="status_checkbox ended_grading" data-userid="<%= user.id %>"/>		
+	<% } else if (user.status == "in_progress"){ %>
+		<button class="status_checkbox in_progress_grading" data-userid="<%= user.id %>"/>
+	<% } else {%>
+		<button class="status_checkbox undefined_grading" data-userid="<%= user.id %>"/>
+		
+	<% } %>
 </li>
 <% }); %>

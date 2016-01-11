@@ -70,8 +70,14 @@
 
                 <p>
                 <% if (assign.duedate) { %>
+						<% var timeOver = MM.util.timestamp() > assign.duedate; %>
                         <span><%= MM.lang.s('duedate') %></span>
-                        <time><%= MM.util.timestampToUserDate(assign.duedate) %></time>
+                        <time
+							<% if(!timeOver) { %> 
+							style="color: red;"
+							<% } %>
+							
+						><%= MM.util.timestampToUserDate(assign.duedate) %></time>
                 <% } else { %>
                         <%= MM.lang.s('duedateno') %>
                 <% } %>
@@ -91,21 +97,34 @@
         </div>
 
         <% if (canviewsubmissions) { %>
+			<center>
+				<div id="all-files">
+				
+					<a id="download_all_files" href="#"><%= MM.lang.s("downloadeverything") %> </a>
+				</div>
+			</center>
         <h3><%= MM.lang.s('submissions') %></h3>
         <% _.each(submissions, function(submission) { %>
+			<% if(submission.status == "submitted" || submission.status == "draft" && timeOver){ %> 
             <% user = {'fullname': 'User with Id' + submission.userid, 'profileimageurl': ''}; %>
             <% if (typeof users[submission.userid] != 'undefined') { %>
                 <% user = users[submission.userid]; %>
             <% } %>
+				<% if(user.role == "student"){ %>
             <div class="post" data-assignsubmission="<%= submission.submission %>">
                 <div class="header">
+							<a class="row-right" href="#grading/participants/<%=assign.course%>/<%=assign.cmid%>/0/<%=user.userid%>">
+								<img id="gradingImg-<%=user.userid%>" src="img/ico-pencil.png" >
+							</a>
                     <img class="user-picture" src="<%= MM.util.getMoodleFilePath(user.profileimageurl) %>">
                     <a class="author-name" href="#participant/<%= assign.course %>/<%= submission.userid %>/1" rel="author"><%= user.fullname %></a>
                     <time><%= MM.util.timestampToUserDate(submission.timemodified) %></time>
-                    <span class="status"><%= submission.status %></span>
+							<span class="status">
+								<%= MM.lang.s(submission.status) %>
+							</span>
                 </div>
                 <div class="content">
-                    <p><%= MM.lang.s('attempnumber') %> <%= submission.attemptnumber %></p>
+						<!--	<p><%= MM.lang.s('attempnumber') %> <%= submission.attemptnumber %></p>-->
 
                     <% var text = MM.plugins.assign._getSubmissionText(submission); %>
                     <% var files = MM.plugins.assign._getSubmissionFiles(submission); %>
@@ -119,13 +138,15 @@
                         <div class="attachments">
                             <% _.each(files, function(file) { %>
                             <% if (file.localpath) { %>
-                                <% var dImg = "reloadgrey"; %>
+										<% var dImg = "reloadgrey";
+											var toDownload= "";%>
                                 <% } else { %>
-                                <% var dImg = "download"; %>
+										<% var dImg = "download";
+											var toDownload= " toDownload";%>
                             <% } %>
                             <div class="attachment media">
                                 <div class="content-actions app-icon">
-                                    <img id="downimg-<%= file.id %>" src="img/<%= dImg %>.png" class="assign-download" data-downloadurl="<%= file.fileurl %>" data-filename="<%= file.filepath %>" data-attachmentid="<%= file.id %>">
+											<img id="downimg-<%= file.id %>" src="img/<%= dImg %>.png" class="assign-download <%= toDownload %>" data-downloadurl="<%= file.fileurl %>" data-filename="<%= file.filepath %>" data-attachmentid="<%= file.id %>">
                                 </div>
                                 <div class="content-name">
                                     <div class="img app-ico">
@@ -152,6 +173,8 @@
 
                 </div>
             </div>
+				<% } %>
+			<% } %>
         <% }); %>
         <% } else { %>
             <div class="centered">

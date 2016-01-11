@@ -1,0 +1,15 @@
+<label> <%= MM.lang.s('grade') %> :</label>
+<input type="text" id="feedback_grade"  value="<%= grade%>" style="width: 25%;"/>/<%= gradeMax %><br/>
+
+<label> <%= MM.lang.s('comment') %> : </label>
+<textarea id="feedback_comment" rows="10" cols="30">
+	<%= comment %>
+</textarea>
+
+<br/>
+
+<div>
+<img id="sending_status"/>
+</div>
+<button id="update_grade_button"> <%= MM.lang.s('save') %></button>
+<button id="sending_button"><%= MM.lang.s('synchronize') %></button>

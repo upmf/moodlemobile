@@ -1,0 +1,110 @@
+<% if(device == "phone") { %>
+	<div class="header-sub">
+
+		<div class="back-row">
+			
+				<a onclick="window.history.back();"><img src="img/arrowleft.png"></a>
+			
+		</div>
+		<div id="back-arrow-title" class="media">
+			<div class="img app-ico">
+				<img src="img/mod/assign.png" alt="img">
+			</div>
+			<div class="bd">
+				<h2><%= MM.util.formatText(assign.name)%></h2>
+			</div>
+		</div>
+	</div>
+<% } %>	
+<div class="content-index">
+
+<center>Administration du devoir</center>
+    <div class="path-mod-assign">
+        <div class="assign">
+            <div class="info">
+
+                <% if (date.allowsubmissionsfromdate) { %>
+                    <p>
+                        <span><%= MM.lang.s('allowsubmissionsfromdate') %></span>
+                        <time><%= MM.util.timestampToUserDate(date.allowsubmissionsfromdate) %></time>
+                    </p>
+                <% } %>
+
+                <p>
+                <% if (date.duedate) { %>
+                        <span><%= MM.lang.s('duedate') %></span>
+                        <time><%= MM.util.timestampToUserDate(date.duedate) %></time>
+                <% } else { %>
+                        <%= MM.lang.s('duedateno') %>
+                <% } %>
+                </p>
+
+                <% if (date.cutoffdate) { %>
+                    <p>
+                        <span><%= MM.lang.s('cutoffdate') %></span>
+                        <time><%= MM.util.timestampToUserDate(date.cutoffdate) %></time>
+                    </p>
+                <% } %>
+				<br/>
+				
+				
+				
+				<table id="gradingInfosTable">
+					<tr>
+						<th><%= MM.lang.s('participants') %></th><th><%= MM.lang.s('submissions')%></th><th><%= MM.lang.s('endedcorrections') %></th>
+					</tr>
+					<tr>
+						<td>
+								<%=participants.nbParticipants%></td>
+						<td>
+							<% var timeOver = MM.util.timestamp() > date.duedate; %>
+							
+									<%= participants.nbSubmitted %> 
+							<% if(timeOver) { %>
+									(+ <%= participants.nbDraft %> brouillons)
+							<% } %>
+						</td>
+						<td id="EndedGradingNumber">
+							<%=grading.nbEndedGrading%>
+						</td>
+					</tr>
+				</table>
+				
+				<br/>
+				
+				 <p>
+					<span>
+						Devoirs notés :
+					</span>
+					<span> 
+						<%=grading.nbGrades%>
+					</span>
+					<span>
+						(moy: <%=grading.grades.moy%> / max: <%=grading.grades.max%> / min: <%=grading.grades.min%>  )
+					</span>
+					
+				</p>
+				<p>
+					<span>
+						Devoirs commentés:
+					</span>
+					<span> 
+						<%=grading.nbComments%>   
+					</span>          						
+				</p>
+
+            </div>
+		</div>
+		<h3><center>Envoi des corrections<center></h3>
+		<div id="send_grading"><br/><br/><center>
+			<form>
+				<label for="send_ended">Corrections terminées</label> 
+				<input type= "radio" name="send" value="ended" id="send_ended" checked>
+				<input type= "radio" name="send" value="all" id="send_all"> 
+				<label for="send_all">Tout envoyer</label>
+			</form>
+			<br/><br/>
+			<button id="sending_button"><%= MM.lang.s('synchronize') %></button>
+			</center>
+	</div>
+</div>

@@ -100,7 +100,7 @@ define(templates,function (participantsTpl, participantTpl, participantsRowTpl, 
                                 that.removeClass("loading-row-black");
                                 MM.plugins.participants.nextLimitFrom += MM.plugins.participants.limitNumber;
 
-                                var tpl = {courseId: courseId, users: users};
+                                var tpl = {courseId: courseId, users: users, linkToGrades: linkToGrades};
                                 var newUsers = MM.tpl.render(MM.plugins.participants.templates.participantsRow.html, tpl);
                                 $("#participants-additional").append(newUsers);
                                 if (users.length < MM.plugins.participants.limitNumber) {

@@ -175,14 +175,22 @@ define(templates, function (assignTpl, submissionsTpl) {
                                     userIds.push(sub.userid);
                                 });
 
+								//keep only student
+								var students = [];
+								_.each(users, function(user) {
+									if (typeof(user.roles[0]) != "undefined" && user.roles[0].shortname == "student") {
+										students.push(user);
+									}
+								});
                                 // Save the users in the users table. We are going to need the user names.
                                 var newUser;
-                                users.forEach(function(user) {
+                                students.forEach(function(user) {
                                     newUser = {
                                         'id': MM.config.current_site.id + '-' + user.id,
                                         'userid': user.id,
                                         'fullname': user.fullname,
-                                        'profileimageurl': user.profileimageurl
+                                        'profileimageurl': user.profileimageurl,
+										'role': user.roles[0].shortname
                                     };
                                     MM.db.insert('users', newUser);
                                     if (userIds.indexOf(user.id) > -1) {
@@ -221,6 +229,42 @@ define(templates, function (assignTpl, submissionsTpl) {
             var html = MM.tpl.render(MM.plugins.assign.templates.submissions.html, data);
             MM.panels.show("right", html, {title: pageTitle});
 
+			//if less than 2 submissions files, hide all download button
+			/*
+			
+			if($(".toDownload").length<2){
+				$("#download_all_files").hide();
+			}
+			
+			*/
+			
+			//TO DOWNLOAD EVERYTHING
+            $("#download_all_files").on(MM.clickType, function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+				
+				if(data.assign.duedate > MM.util.timestamp()){
+					MM.popConfirm("Les étudiants ont encore jusqu'au "+ MM.util.timestampToUserDate(data.assign.duedate)+ " pour rendre leurs devoirs <br/> Etes-vous sur de vouloir tout télécharger ?", function(){
+						$(".toDownload").each(function(){
+							var url = $(this).data("downloadurl");
+							var filename = $(this).data("filename");
+							var attachmentId = $(this).data("attachmentid");
+							MM.plugins.assign._downloadFile(url, filename, attachmentId);
+						})
+					}
+					,null );
+				}
+				
+				else{
+						$(".toDownload").each(function(){
+							var url = $(this).data("downloadurl");
+							var filename = $(this).data("filename");
+							var attachmentId = $(this).data("attachmentid");
+							MM.plugins.assign._downloadFile(url, filename, attachmentId);
+						});
+				}
+				
+            });
             // Handle intro files downloads.
             $(".assign-download", "#panel-right").on(MM.clickType, function(e) {
                 e.preventDefault();
@@ -320,6 +364,7 @@ define(templates, function (assignTpl, submissionsTpl) {
                         MM.log("Downloading Moodle file to " + filePath + " from URL: " + downloadURL);
 
                         $(downCssId).attr("src", "img/loadingblack.gif");
+						//Pour télécharger dans dossier assign files (conserver l'original)
                         MM.moodleDownloadFile(downloadURL, filePath,
                             function(fullpath) {
                                 MM.log("Download of content finished " + fullpath + " URL: " + downloadURL);
