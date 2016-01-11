@@ -2,13 +2,13 @@
 <widget xmlns     = "http://www.w3.org/ns/widgets"
         xmlns:gap = "http://phonegap.com/ns/1.0"
         xmlns:android = "http://schemas.android.com/apk/res/android"
-        id        = "com.moodle.moodlemobile"
+        id        = "fr.upmf-grenoble.moodlemobile"
         versionCode = "391"
         version   = "1.15">
-    <name>Moodle Mobile</name>
+    <name>UPMF Moodle Mobile</name>
 
     <description>
-        Moodle Mobile official app
+        fr.upmf-grenob Moodle Mobile app
     </description>
 
     <author href="http://moodle.com" email="juan@moodle.com">
@@ -18,7 +18,6 @@
     <gap:config-file platform="ios" parent="CFBundleShortVersionString">
         <string>1.15</string>
     </gap:config-file>
-
     <preference name="android-minSdkVersion" value="5" />
 
     <preference name="phonegap-version" value="3.6.3" />
